@@ -1835,7 +1835,7 @@ input, select, textarea {
 		transition: border-color 0.2s ease;
 		background-color: transparent;
 		border: solid 1px !important;
-		border-color: #79d7fd !important;
+		border-color: #4bddf7 !important;
 		border-radius: 3em;
 		color: #ffffff !important;
 		cursor: pointer;
@@ -3287,7 +3287,7 @@ input, select, textarea {
 		}
 
 		.wrapper.style1 {
-			background-color: #00bbfa;
+			background-color: #0b3bb2;
 		}
 
 		.wrapper.style1-alt {
@@ -3809,14 +3809,14 @@ input, select, textarea {
 			}
 
 			#sidebar nav a:before {
-				background: #00183e;
+				background: #4bddf7;
 			}
 
 			#sidebar nav a:after {
-				background-image: -moz-linear-gradient(to right, #79d7fd, #00bbfa);
-				background-image: -webkit-linear-gradient(to right, #79d7fd, #00bbfa);
-				background-image: -ms-linear-gradient(to right, #79d7fd, #00bbfa);
-				background-image: linear-gradient(to right, #79d7fd, #00bbfa);
+				background-image: -moz-linear-gradient(to right, #4bddf7, #0b3bb2);
+				background-image: -webkit-linear-gradient(to right, #4bddf7, #0b3bb2);
+				background-image: -ms-linear-gradient(to right, #4bddf7, #0b3bb2);
+				background-image: linear-gradient(to right, #4bddf7, #0b3bb2);
 				-moz-transition: max-width 0.2s ease;
 				-webkit-transition: max-width 0.2s ease;
 				-ms-transition: max-width 0.2s ease;
@@ -3829,7 +3829,7 @@ input, select, textarea {
 			}
 
 			#sidebar nav a.active {
-				color: #00bbfa;
+				color: #4bddf7;
 			}
 
 				#sidebar nav a.active:after {
