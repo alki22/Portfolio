@@ -100,7 +100,7 @@ input, select, textarea {
 	}
 
 	body {
-		background: #312450;
+		background: #ffffff;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -174,6 +174,7 @@ input, select, textarea {
 
 	p {
 		margin: 0 0 2em 0;
+		font-family: p3_text;
 	}
 
 	h1, h2, h3, h4, h5, h6 {
@@ -3295,7 +3296,7 @@ input, select, textarea {
 		}
 
 		.wrapper.style2 {
-			background-color: #5052b5;
+			background-color: #2966e2;
 		}
 
 		.wrapper.style2-alt {

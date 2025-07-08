@@ -22,6 +22,10 @@
     src: url(../webfonts/AktivGrotesk-XBold.ttf) format('truetype');
 }
 
+@font-face {
+    font-family: p3_text;
+    src: url(../webfonts/NudMotoyaExCedar\ W6.ttf) format('truetype');
+}
 
 
 
