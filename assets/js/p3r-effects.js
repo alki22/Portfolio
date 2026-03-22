@@ -768,6 +768,25 @@
 			sessionStorage.removeItem('p3r-transition-dir');
 			transitionIn(savedDir);
 		}
+
+		// Clean up stuck overlays when page is restored from bfcache
+		// (e.g. browser back/forward button)
+		window.addEventListener('pageshow', function(e) {
+			if (e.persisted) {
+				// Page was restored from cache — remove any stuck overlays
+				overlay.style.transform = 'translateY(100%)';
+				overlay.style.pointerEvents = 'none';
+				isTransitioning = false;
+				sessionStorage.removeItem('p3r-transition-dir');
+				// Remove any leftover curtain/blend divs
+				document.querySelectorAll('div[style*="z-index:99998"], div[style*="z-index:99997"]').forEach(function(el) {
+					el.remove();
+				});
+				// Restore body overflow
+				document.documentElement.style.overflow = '';
+				document.body.style.overflow = '';
+			}
+		});
 	}
 
 	// ── Initialization ─────────────────────────────────────────────
