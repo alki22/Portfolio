@@ -345,11 +345,15 @@
 		};
 
 		// Add random diagonal angles to each nav item
+		// Predefined angles: Welcome mild, Take Your Time very irregular, Get In Touch moderate
 		var navItems = sidebar.querySelectorAll('nav > ul > li');
-		var angles = [];
+		var presetAngles = [
+			rand(-8, -3),    // Welcome: mild tilt
+			rand(12, 20),    // Take Your Time: strong irregular tilt
+			rand(-15, -6)    // Get In Touch: moderate opposite tilt
+		];
 		for (var i = 0; i < navItems.length; i++) {
-			var angle = rand(-6, 6); // random diagonal
-			angles.push(angle);
+			var angle = i < presetAngles.length ? presetAngles[i] : rand(-20, 20);
 			navItems[i].style.transform = 'rotate(' + angle + 'deg)';
 			navItems[i].style.transformOrigin = 'right center';
 		}
@@ -391,6 +395,381 @@
 		updateActiveState();
 	}
 
+	// ── P3R Spotlight Treatment ─────────────────────────────────────
+	// Apply irregular rotations to spotlight headings and descriptions
+
+	function initSpotlightTreatment() {
+		var spotlightInners = document.querySelectorAll('.spotlights > section > .content > .inner');
+
+		for (var i = 0; i < spotlightInners.length; i++) {
+			var inner = spotlightInners[i];
+
+			// Keep heading with no rotation
+			var h2 = inner.querySelector('h2');
+			if (h2) {
+				h2.style.transform = 'none';
+			}
+
+			// Rotate description paragraphs slightly
+			var paragraphs = inner.querySelectorAll('p');
+			for (var j = 0; j < paragraphs.length; j++) {
+				var pAngle = rand(-3, 3);
+				paragraphs[j].style.transform = 'rotate(' + pAngle + 'deg)';
+				paragraphs[j].style.transformOrigin = 'left center';
+			}
+
+			// Rotate the wave button slightly
+			var waveBtn = inner.querySelector('.p3r-wave-btn');
+			if (waveBtn) {
+				var bAngle = rand(-3, 3);
+				waveBtn.style.transform = 'rotate(' + bAngle + 'deg)';
+				waveBtn.style.transformOrigin = 'left center';
+			}
+		}
+	}
+
+	// ── P3R Subpage Header Treatment ───────────────────────────
+	// Apply P3R styling to subpage headers: rotations on nav items,
+	// big cyan background text matching the page title
+
+	function initSubpageHeader() {
+		var header = document.getElementById('header');
+		if (!header) return;
+
+		// Add rotations to nav items
+		var navItems = header.querySelectorAll('nav > ul > li');
+		var headerAngles = [rand(-6, -2), rand(3, 8), rand(-10, -4), rand(2, 7)];
+		for (var i = 0; i < navItems.length; i++) {
+			var angle = i < headerAngles.length ? headerAngles[i] : rand(-8, 8);
+			navItems[i].style.transform = 'rotate(' + angle + 'deg)';
+			navItems[i].style.transformOrigin = 'center center';
+		}
+
+		// Create large cyan background title text
+		var h1 = document.querySelector('#main h1.alt, section.wrapper h1.alt');
+		if (h1) {
+			var titleText = h1.textContent;
+			// Shorten long titles for the bg text
+			var shortTitles = {
+				'academic experience': 'ACADEMIA',
+				'my time at the industry': 'INDUSTRY',
+				'interests and passions': 'INTERESTS'
+			};
+			var lower = titleText.toLowerCase().trim();
+			if (shortTitles[lower]) titleText = shortTitles[lower];
+
+			var bgTitle = document.createElement('div');
+			bgTitle.className = 'p3r-subpage-bg-title';
+			bgTitle.textContent = titleText;
+			document.body.appendChild(bgTitle);
+		}
+	}
+
+	// ── Page Transition (Wave/Water) ───────────────────────────
+	// Three transition directions:
+	//   - bottom-up: main page → subpage
+	//   - horizontal: subpage → subpage
+	//   - top-down: any → home/main page
+
+	function initPageTransition() {
+		var isOnMainPage = !!document.getElementById('sidebar');
+
+		// Create the transition overlay
+		var overlay = document.createElement('div');
+		overlay.id = 'p3r-page-transition';
+		overlay.innerHTML =
+			'<svg viewBox="0 0 1440 900" preserveAspectRatio="none" style="width:100%;height:100%;position:absolute;top:0;left:0;">' +
+				'<path id="p3r-wave-path-1" fill="rgba(18, 105, 204, 0.95)"></path>' +
+				'<path id="p3r-wave-path-2" fill="rgba(10, 22, 40, 0.9)"></path>' +
+				'<path id="p3r-wave-path-3" fill="#1269cc"></path>' +
+			'</svg>';
+		overlay.style.cssText =
+			'position:fixed;top:0;left:0;width:100%;height:100%;' +
+			'z-index:99999;pointer-events:none;' +
+			'transform:translateY(100%);';
+		document.body.appendChild(overlay);
+
+		var isTransitioning = false;
+
+		// ── Vertical wave paths (bottom-up or top-down) ──
+		function animateVerticalWaves(progress, fromTop) {
+			for (var w = 1; w <= 3; w++) {
+				var path = document.getElementById('p3r-wave-path-' + w);
+				if (!path) continue;
+
+				var offset = (w - 1) * 40;
+				var amp = 30 + w * 10;
+				var freq = 0.008 + w * 0.002;
+				var speed = Date.now() * 0.003;
+
+				var d, baseY;
+				if (fromTop) {
+					// Top-down: wave edge descends from top
+					baseY = 900 * progress;
+					d = 'M0 0';
+					for (var x = 0; x <= 1440; x += 10) {
+						var y = baseY - offset +
+							Math.sin(x * freq + speed) * amp +
+							Math.sin(x * freq * 0.5 + speed * 1.3) * amp * 0.5;
+						d += ' L' + x + ' ' + y;
+					}
+					d += ' L1440 0 Z';
+				} else {
+					// Bottom-up: wave edge rises from bottom
+					baseY = 900 * (1 - progress);
+					d = 'M0 900';
+					for (var x2 = 0; x2 <= 1440; x2 += 10) {
+						var y2 = baseY + offset +
+							Math.sin(x2 * freq + speed) * amp +
+							Math.sin(x2 * freq * 0.5 + speed * 1.3) * amp * 0.5;
+						d += ' L' + x2 + ' ' + y2;
+					}
+					d += ' L1440 900 Z';
+				}
+				path.setAttribute('d', d);
+			}
+		}
+
+		// ── Horizontal wave paths (left-to-right) ──
+		function animateHorizontalWaves(progress) {
+			for (var w = 1; w <= 3; w++) {
+				var path = document.getElementById('p3r-wave-path-' + w);
+				if (!path) continue;
+
+				var offset = (w - 1) * 30;
+				var amp = 25 + w * 8;
+				var freq = 0.01 + w * 0.003;
+				var speed = Date.now() * 0.003;
+
+				// Wave edge sweeps from left to right
+				var baseX = 1440 * progress;
+				var d = 'M0 0';
+				d += ' L0 900';
+				for (var y = 900; y >= 0; y -= 10) {
+					var x = baseX - offset +
+						Math.sin(y * freq + speed) * amp +
+						Math.sin(y * freq * 0.5 + speed * 1.3) * amp * 0.5;
+					d += ' L' + x + ' ' + y;
+				}
+				d += ' Z';
+				path.setAttribute('d', d);
+			}
+		}
+
+		// ── Horizontal wave paths (right-to-left) ──
+		function animateHorizontalWavesRTL(progress) {
+			for (var w = 1; w <= 3; w++) {
+				var path = document.getElementById('p3r-wave-path-' + w);
+				if (!path) continue;
+
+				var offset = (w - 1) * 30;
+				var amp = 25 + w * 8;
+				var freq = 0.01 + w * 0.003;
+				var speed = Date.now() * 0.003;
+
+				// Wave edge sweeps from right to left
+				var baseX = 1440 * (1 - progress);
+				var d = 'M1440 0';
+				d += ' L1440 900';
+				for (var y = 900; y >= 0; y -= 10) {
+					var x = baseX + offset +
+						Math.sin(y * freq + speed) * amp +
+						Math.sin(y * freq * 0.5 + speed * 1.3) * amp * 0.5;
+					d += ' L' + x + ' ' + y;
+				}
+				d += ' Z';
+				path.setAttribute('d', d);
+			}
+		}
+
+		// Page order for determining horizontal direction
+		var pageOrder = { 'academia.html': 0, 'industry.html': 1, 'hobbies.html': 2 };
+
+		function getPageIndex(href) {
+			for (var key in pageOrder) {
+				if (href.indexOf(key) !== -1) return pageOrder[key];
+			}
+			return -1;
+		}
+
+		var currentPageIndex = getPageIndex(window.location.pathname);
+
+		// Determine transition direction based on destination
+		function getDirection(href) {
+			var isGoingHome = href === 'index.html' || href === '/' || href === './' ||
+				href.indexOf('index.html') !== -1;
+			if (isGoingHome) return 'top-down';
+			if (!isOnMainPage) {
+				// subpage → subpage: check page order for direction
+				var destIndex = getPageIndex(href);
+				if (destIndex < currentPageIndex) return 'horizontal-rtl';
+				return 'horizontal';
+			}
+			return 'bottom-up';  // main → subpage
+		}
+
+		// ── Transition out: wave covers the page ──
+		function transitionOut(href, direction) {
+			if (isTransitioning) return;
+			isTransitioning = true;
+			overlay.style.pointerEvents = 'all';
+			overlay.style.transform = 'translate(0, 0)';
+
+			var start = Date.now();
+			var duration = 600;
+
+			function step() {
+				var elapsed = Date.now() - start;
+				var progress = Math.min(elapsed / duration, 1);
+				var eased = progress * progress;
+
+				if (direction === 'horizontal') {
+					animateHorizontalWaves(eased);
+				} else if (direction === 'horizontal-rtl') {
+					animateHorizontalWavesRTL(eased);
+				} else {
+					animateVerticalWaves(eased, direction === 'top-down');
+				}
+
+				if (progress < 1) {
+					requestAnimationFrame(step);
+				} else {
+					window.location.href = href;
+				}
+			}
+			step();
+		}
+
+		// ── Transition in: wave recedes and "drags" the new page into view ──
+		// Uses a fixed-position curtain that slides with the wave to create the
+		// illusion of the page being dragged in, without transforming page content
+		// (which would break scroll position on long pages).
+		function transitionIn(direction) {
+			overlay.style.transform = 'translate(0, 0)';
+			window.scrollTo(0, 0);
+
+			// Hide subpage images during transition to prevent flash
+			var mainImage = document.querySelector('#main .image.fit');
+			if (mainImage) {
+				mainImage.style.opacity = '0';
+				mainImage.style.transition = 'none';
+			}
+
+			// Create a solid curtain behind the wave that matches the page bg
+			// As the wave recedes, this curtain slides away revealing content underneath
+			var curtain = document.createElement('div');
+			curtain.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99998;pointer-events:none;';
+			curtain.style.background = '#1269cc';
+			document.body.appendChild(curtain);
+
+			// Create gradient blend at the leading edge for seamless transition
+			var blend = document.createElement('div');
+			blend.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99997;pointer-events:none;';
+			document.body.appendChild(blend);
+
+			if (direction === 'bottom-up') {
+				blend.style.background = 'linear-gradient(to bottom, transparent 50%, #1269cc 90%)';
+			} else if (direction === 'top-down') {
+				blend.style.background = 'linear-gradient(to top, transparent 50%, #1269cc 90%)';
+			} else if (direction === 'horizontal-rtl') {
+				blend.style.background = 'linear-gradient(to right, transparent 50%, #1269cc 90%)';
+			} else {
+				blend.style.background = 'linear-gradient(to left, transparent 50%, #1269cc 90%)';
+			}
+
+			var start = Date.now();
+			var duration = 700;
+
+			function step() {
+				var elapsed = Date.now() - start;
+				var progress = Math.min(elapsed / duration, 1);
+				var eased = 1 - (1 - progress) * (1 - progress);
+
+				// Slide the curtain away slightly behind the wave so it never
+				// reveals content before the wave edge has passed (prevents image flash)
+				var curtainLag = Math.max(0, eased - 0.08);
+				if (direction === 'bottom-up') {
+					curtain.style.transform = 'translateY(' + (curtainLag * 100) + '%)';
+					blend.style.transform = 'translateY(' + (curtainLag * 100) + '%)';
+				} else if (direction === 'top-down') {
+					curtain.style.transform = 'translateY(' + (-curtainLag * 100) + '%)';
+					blend.style.transform = 'translateY(' + (-curtainLag * 100) + '%)';
+				} else if (direction === 'horizontal-rtl') {
+					curtain.style.transform = 'translateX(' + (-curtainLag * 100) + '%)';
+					blend.style.transform = 'translateX(' + (-curtainLag * 100) + '%)';
+				} else {
+					curtain.style.transform = 'translateX(' + (curtainLag * 100) + '%)';
+					blend.style.transform = 'translateX(' + (curtainLag * 100) + '%)';
+				}
+
+				// Fade out the blend as it reveals content
+				blend.style.opacity = (1 - eased * 0.5).toString();
+
+				// Move the wave overlay away
+				if (direction === 'horizontal') {
+					animateHorizontalWaves(1 - eased);
+					overlay.style.transform = 'translateX(' + (eased * 100) + '%)';
+				} else if (direction === 'horizontal-rtl') {
+					animateHorizontalWavesRTL(1 - eased);
+					overlay.style.transform = 'translateX(' + (-eased * 100) + '%)';
+				} else if (direction === 'top-down') {
+					animateVerticalWaves(1 - eased, true);
+					overlay.style.transform = 'translateY(' + (-eased * 100) + '%)';
+				} else {
+					animateVerticalWaves(1 - eased, false);
+					overlay.style.transform = 'translateY(' + (eased * 100) + '%)';
+				}
+
+				if (progress < 1) {
+					requestAnimationFrame(step);
+				} else {
+					curtain.remove();
+					blend.remove();
+					overlay.style.pointerEvents = 'none';
+					isTransitioning = false;
+
+					// Fade in the subpage image after transition completes
+					if (mainImage) {
+						mainImage.style.transition = 'opacity 0.3s ease';
+						mainImage.style.opacity = '1';
+					}
+				}
+			}
+			step();
+		}
+
+		// Intercept navigation links
+		document.addEventListener('click', function (e) {
+			var link = e.target.closest('a[href]');
+			if (!link) return;
+
+			var href = link.getAttribute('href');
+
+			// Skip hash links, external links, javascript:, mailto:
+			if (!href ||
+				href.charAt(0) === '#' ||
+				href.indexOf('://') !== -1 ||
+				href.indexOf('javascript:') === 0 ||
+				href.indexOf('mailto:') === 0) {
+				return;
+			}
+
+			if (link.hostname && link.hostname !== window.location.hostname) return;
+
+			e.preventDefault();
+			var direction = getDirection(href);
+			sessionStorage.setItem('p3r-transition-dir', direction);
+			transitionOut(href, direction);
+		});
+
+		// Play entrance animation if arriving from a transition
+		var savedDir = sessionStorage.getItem('p3r-transition-dir');
+		if (savedDir) {
+			sessionStorage.removeItem('p3r-transition-dir');
+			transitionIn(savedDir);
+		}
+	}
+
 	// ── Initialization ─────────────────────────────────────────────
 
 	function init() {
@@ -418,6 +797,27 @@
 		animate();
 		initShimmer();
 		initP3RSidebar();
+		initSpotlightTreatment();
+		initSubpageHeader();
+		initPageTransition();
+
+		// Fallback: IntersectionObserver to activate spotlights with scroll-snap
+		// (Scrollex's scroll-based detection can miss snap jumps)
+		if ('IntersectionObserver' in window) {
+			var spotlightSections = document.querySelectorAll('.spotlights > section');
+			if (spotlightSections.length) {
+				var observer = new IntersectionObserver(function(entries) {
+					entries.forEach(function(entry) {
+						if (entry.isIntersecting) {
+							entry.target.classList.remove('inactive');
+						}
+					});
+				}, { threshold: 0.2 });
+				spotlightSections.forEach(function(section) {
+					observer.observe(section);
+				});
+			}
+		}
 	}
 
 	if (document.readyState === 'loading') {

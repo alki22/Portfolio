@@ -100,7 +100,18 @@ input, select, textarea {
 	}
 
 	body {
-		background: #1a3a6a;
+		background: linear-gradient(
+			180deg,
+			#51eefc 0%,
+			#3ac4e8 8%,
+			#2898d4 18%,
+			#1a6abf 30%,
+			#1555a8 45%,
+			#1269cc 55%,
+			#1060b8 70%,
+			#1a3a6a 100%
+		);
+		background-attachment: fixed;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -2580,6 +2591,7 @@ input, select, textarea {
 		margin: 1.75em 1.5em 1.5em 1.5em;
 		min-height: 48px;
 		cursor: default;
+		z-index: 2;
 	}
 
 		#logo h4 {
@@ -3143,7 +3155,9 @@ input, select, textarea {
 		-webkit-flex-direction: row;
 		-ms-flex-direction: row;
 		flex-direction: row;
-		min-height: 22.5em;
+		min-height: calc(100vh / 3);
+		max-height: calc(100vh / 3);
+		overflow: hidden;
 	}
 
 		body.is-ie .spotlights > section {
@@ -3679,14 +3693,14 @@ input, select, textarea {
 		cursor: default;
 		height: 100vh;
 		left: 0;
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden;
 		position: fixed;
 		text-align: right;
 		top: 0;
 		width: 18em;
 		z-index: 10000;
 		font-family: p3_body_italic;
+		clip-path: polygon(0 0, 100% 2%, 97% 98%, 0 100%);
 	}
 
 		#sidebar > .inner {
@@ -3713,6 +3727,8 @@ input, select, textarea {
 			min-height: 100%;
 			opacity: 1;
 			width: 100%;
+			position: relative;
+			z-index: 2;
 		}
 
 			body.is-ie #sidebar > .inner {
@@ -3913,7 +3929,7 @@ input, select, textarea {
 			}
 
 			#sidebar nav a:before {
-				background: rgba(18, 105, 204, 0.15);
+				background: transparent;
 			}
 
 			#sidebar nav a:after {
@@ -4156,21 +4172,22 @@ input, select, textarea {
 
 /* ── P3R Sidebar Styles ──────────────────────────────────── */
 
-/* Big background text behind sidebar */
+/* Big background text behind sidebar — vertical along left edge like P3R */
 #p3r-sidebar-bg-text {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%) rotate(-8deg);
-	font-size: 4em;
+	top: 0;
+	left: 0;
+	writing-mode: vertical-lr;
+	font-size: 7em;
 	font-weight: 900;
-	color: rgba(0, 0, 0, 0.06);
+	color: rgba(0, 0, 0, 0.75);
 	white-space: nowrap;
 	pointer-events: none;
 	z-index: 0;
 	line-height: 1;
 	text-transform: uppercase;
 	letter-spacing: -0.02em;
+	height: 100%;
 }
 
 /* Nav items get relative positioning for z-index */
@@ -4229,25 +4246,135 @@ input, select, textarea {
 	color: #dc1e32;
 }
 
+/* ── P3R Spotlight Treatment ────────────────────────────── */
+
+/* Spotlight titles and descriptions get irregular rotation */
+.spotlights > section > .content > .inner h2 {
+	position: relative;
+	display: inline-block;
+	transition: color 0.3s ease, transform 0.3s ease;
+	cursor: default;
+}
+
+.spotlights > section > .content > .inner p {
+	position: relative;
+	transition: color 0.3s ease;
+}
+
+/* Hover state: brighten text */
+.spotlights > section > .content > .inner:hover h2 {
+	color: #51eefc;
+	text-shadow: 0 0 20px rgba(81, 238, 252, 0.4);
+}
+
+.spotlights > section > .content > .inner:hover p {
+	color: #ffffff;
+}
+
+/* Remove visual separator between image and content */
+.spotlights > section > .image {
+	border-right: none !important;
+}
+
+.spotlights > section > .content {
+	border-left: none !important;
+}
+
+/* ── P3R Wave Button (replaces Learn More) ────────────────── */
+.spotlights .p3r-wave-btn {
+	display: inline-block;
+	position: relative;
+	padding: 0.8em 2.5em;
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 0.7em;
+	font-weight: bold;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	overflow: hidden;
+	border: none;
+	background: transparent;
+	transition: color 0.3s ease;
+}
+
+.spotlights .p3r-wave-btn::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 200%;
+	height: 3px;
+	background: linear-gradient(90deg,
+		transparent 0%,
+		#51eefc 15%,
+		rgba(81, 238, 252, 0.3) 30%,
+		#51eefc 50%,
+		rgba(81, 238, 252, 0.3) 70%,
+		#51eefc 85%,
+		transparent 100%
+	);
+	animation: p3r-wave-slide 3s linear infinite;
+}
+
+.spotlights .p3r-wave-btn::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 0;
+	background: linear-gradient(180deg,
+		transparent 0%,
+		rgba(81, 238, 252, 0.05) 60%,
+		rgba(81, 238, 252, 0.15) 100%
+	);
+	transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.spotlights .p3r-wave-btn:hover::after {
+	height: 100%;
+}
+
+.spotlights .p3r-wave-btn:hover {
+	color: #51eefc;
+}
+
+/* Wave arrow indicator */
+.spotlights .p3r-wave-btn .wave-arrow {
+	display: inline-block;
+	margin-left: 0.5em;
+	transition: transform 0.3s ease;
+}
+
+.spotlights .p3r-wave-btn:hover .wave-arrow {
+	transform: translateX(4px);
+	animation: p3r-arrow-bob 1s ease-in-out infinite;
+}
+
+@keyframes p3r-wave-slide {
+	0%   { transform: translateX(-50%); }
+	100% { transform: translateX(0%); }
+}
+
+@keyframes p3r-arrow-bob {
+	0%, 100% { transform: translateX(4px); }
+	50%      { transform: translateX(8px); }
+}
+
 /* Intro inner z-index */
 #intro .inner {
 	position: relative;
 	z-index: 2;
 }
 
-/* White contrast divider between spotlight sections */
+/* Remove spotlight dividers */
 .spotlights > section {
-	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.spotlights > section:last-child {
 	border-bottom: none;
 }
 
-/* Spotlight content white accent bar */
 .spotlights > section > .content > .inner {
-	border-left: 2px solid rgba(255, 255, 255, 0.15);
-	padding-left: 2em;
+	border-left: none;
 }
 
 /* Button white glow pulse */
@@ -4285,6 +4412,11 @@ input, select, textarea {
 /* Footer white accent top border */
 #footer {
 	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Subpage footer: transparent so side text shows through */
+#header + #wrapper + #footer {
+	background-color: transparent;
 }
 
 /* Wrapper sections get a subtle white top highlight */
@@ -4341,6 +4473,206 @@ input, select, textarea {
 
 #sidebar nav a:hover::before {
 	box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* ── P3R Subpage Styles ──────────────────────────────────── */
+
+/* Header bar: more opaque but still see-through for confetti */
+#header {
+	background-color: rgba(18, 105, 204, 0.85);
+	position: relative;
+	overflow: visible;
+	z-index: 10;
+}
+
+/* Subpage nav items: P3R treatment with rotation, triangle, underline */
+#header > nav > ul > li {
+	position: relative;
+	transition: transform 0.3s ease;
+}
+
+#header > nav > ul > li a {
+	position: relative;
+	transition: color 0.3s ease, font-size 0.3s ease;
+}
+
+/* Active nav item in header: bigger, white, with red triangle + underline */
+#header > nav > ul > li a.active {
+	color: #ffffff !important;
+	font-size: 0.8em;
+}
+
+#header > nav > ul > li a.active::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(to right, #dc1e32, #ff4060);
+}
+
+/* Red triangle behind active header nav item */
+#header > nav > ul > li a.active::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: -1.2em;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 0 2em 1.6em 0;
+	border-color: transparent #dc1e32 transparent transparent;
+	transform: translateY(-50%) rotate(-5deg);
+	z-index: -1;
+	animation: p3r-triangle-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Inactive header nav: cyan, smaller */
+#header > nav > ul > li a:not(.active) {
+	color: rgba(81, 238, 252, 0.7) !important;
+}
+
+#header > nav > ul > li a:not(.active):hover {
+	color: #51eefc !important;
+}
+
+/* Subpage main image: keep below transition overlays to prevent flash */
+#main .image.fit {
+	position: relative;
+	z-index: 1;
+}
+
+/* Subpage title: large cyan background text like sidebar bg text */
+#main h1.alt {
+	position: relative;
+}
+
+.p3r-subpage-bg-title {
+	position: fixed;
+	top: 0;
+	left: -0.1em;
+	writing-mode: vertical-lr;
+	font-size: 10em;
+	font-weight: 900;
+	color: rgba(81, 238, 252, 0.75);
+	white-space: nowrap;
+	pointer-events: none;
+	z-index: 0;
+	line-height: 1;
+	text-transform: uppercase;
+	letter-spacing: -0.02em;
+	height: 100vh;
+	overflow: visible;
+	animation: p3r-title-wave 8s ease-in-out infinite;
+}
+
+@keyframes p3r-title-wave {
+	0%   { transform: translateY(0); }
+	25%  { transform: translateY(8px); }
+	50%  { transform: translateY(-5px); }
+	75%  { transform: translateY(6px); }
+	100% { transform: translateY(0); }
+}
+
+/* ── Desktop Scroll Snap (main page only) ───────────────── */
+html:has(#sidebar) {
+	scroll-snap-type: y mandatory;
+}
+
+#intro {
+	scroll-snap-align: start;
+	min-height: 100vh;
+}
+
+#one {
+	scroll-snap-align: start;
+	min-height: 100vh;
+}
+
+#three {
+	scroll-snap-align: start;
+	min-height: 100vh;
+}
+
+#footer {
+	scroll-snap-align: end;
+}
+
+/* ── Mobile Scroll Snap ──────────────────────────────────── */
+@media screen and (max-width: 736px) {
+
+	/* Snap container on html for main page only */
+	html:has(#sidebar) {
+		scroll-snap-type: y mandatory;
+		overflow-y: scroll;
+	}
+
+	/* Each major section snaps to fill one screen (main page only) */
+	#intro,
+	.spotlights > section,
+	#three,
+	#footer {
+		scroll-snap-align: start;
+		min-height: 100vh;
+		max-height: none;
+	}
+
+	/* Override the 1/3 height for spotlights on mobile */
+	.spotlights > section {
+		flex-direction: column;
+		min-height: 100vh !important;
+		max-height: none !important;
+	}
+
+	/* Let spotlight image take top portion */
+	.spotlights > section > .image {
+		width: 100%;
+		height: 40vh;
+		min-height: 40vh;
+	}
+
+	/* Let spotlight content fill remaining space */
+	.spotlights > section > .content {
+		width: 100%;
+		flex: 1;
+		padding: 2em 2em 1em 2em;
+	}
+
+	/* Intro fills one screen */
+	#intro {
+		min-height: 100vh !important;
+		padding: 2em 0;
+	}
+
+	/* Footer snaps too */
+	#footer {
+		min-height: auto;
+		scroll-snap-align: end;
+	}
+
+	/* Hide sidebar bg text on mobile, keep subpage bg text with lower alpha */
+	#p3r-sidebar-bg-text {
+		display: none;
+	}
+
+	.p3r-subpage-bg-title {
+		color: rgba(81, 238, 252, 0.25);
+		font-size: 18vh;
+		height: 100vh;
+		display: flex;
+		align-items: stretch;
+	}
+
+	/* Subpage sections snap */
+	#main.wrapper {
+		scroll-snap-align: start;
+	}
+
+	/* Header bar on subpages */
+	#header {
+		scroll-snap-align: none;
+	}
 }
 
 /* Reduced motion */
