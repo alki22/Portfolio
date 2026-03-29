@@ -4564,15 +4564,10 @@ input, select, textarea {
 	letter-spacing: -0.02em;
 	height: 100vh;
 	overflow: visible;
-	animation: p3r-title-wave 8s ease-in-out infinite;
 }
 
-@keyframes p3r-title-wave {
-	0%   { transform: translateY(0); }
-	25%  { transform: translateY(8px); }
-	50%  { transform: translateY(-5px); }
-	75%  { transform: translateY(6px); }
-	100% { transform: translateY(0); }
+.p3r-subpage-bg-title span {
+	display: inline-block;
 }
 
 /* ── Desktop Scroll Snap (main page only) ───────────────── */

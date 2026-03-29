@@ -452,17 +452,54 @@
 			// Shorten long titles for the bg text
 			var shortTitles = {
 				'academic experience': 'ACADEMIA',
-				'my time at the industry': 'INDUSTRY',
-				'interests and passions': 'INTERESTS'
+				'my time at the industry': 'INDUSTRIA',
+				'interests and passions': 'PERSONA'
 			};
 			var lower = titleText.toLowerCase().trim();
 			if (shortTitles[lower]) titleText = shortTitles[lower];
 
 			var bgTitle = document.createElement('div');
 			bgTitle.className = 'p3r-subpage-bg-title';
-			bgTitle.textContent = titleText;
+
+			// Wrap each letter in a span for per-letter underwater animation
+			for (var c = 0; c < titleText.length; c++) {
+				var span = document.createElement('span');
+				span.textContent = titleText[c];
+				bgTitle.appendChild(span);
+			}
+
 			document.body.appendChild(bgTitle);
+
+			// Animate underwater refraction effect
+			if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				animateUnderwaterText(bgTitle);
+			}
 		}
+	}
+
+	function animateUnderwaterText(container) {
+		var spans = container.querySelectorAll('span');
+		var startTime = performance.now();
+
+		function step(now) {
+			var t = (now - startTime) / 1000; // seconds
+
+			for (var i = 0; i < spans.length; i++) {
+				var phase = i * 0.7; // phase offset per letter
+
+				// Multiple sine waves at different frequencies for organic feel
+				var dx = Math.sin(t * 1.3 + phase) * 2 + Math.sin(t * 2.7 + phase * 1.4) * 0.8;
+				var dy = Math.sin(t * 0.9 + phase * 1.2) * 3 + Math.sin(t * 2.1 + phase * 0.8) * 1.2;
+				var rot = Math.sin(t * 1.1 + phase * 0.9) * 1.5 + Math.sin(t * 2.5 + phase * 1.3) * 0.5;
+				var sx = 1 + Math.sin(t * 0.7 + phase * 1.1) * 0.03;
+
+				spans[i].style.transform = 'translateX(' + dx + 'px) translateY(' + dy + 'px) rotate(' + rot + 'deg) scaleX(' + sx + ')';
+			}
+
+			requestAnimationFrame(step);
+		}
+
+		requestAnimationFrame(step);
 	}
 
 	// ── Page Transition (Wave/Water) ───────────────────────────
